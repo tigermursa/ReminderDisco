@@ -1,42 +1,40 @@
-// app/page.jsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
-  const [status, setStatus] = useState("");
+  const [origin, setOrigin] = useState("");
 
-  const triggerCron = async () => {
-    setStatus("পাঠানো হচ্ছে...");
-    try {
-      const res = await fetch("/api/send-time");
-      const data = await res.json();
-      if (data.success) {
-        setStatus(`✅ সফল! সময়: ${data.time}`);
-      } else {
-        setStatus(`❌ ত্রুটি: ${data.error}`);
-      }
-    } catch (err) {
-      setStatus(`❌ নেটওয়ার্ক ত্রুটি: ${err.message}`);
-    }
-  };
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h1>⏰ Discord Time Sender</h1>
-      <button
-        onClick={triggerCron}
-        style={{ fontSize: "1.2rem", padding: "0.5rem 1rem" }}
-      >
-        এখন সময় পাঠান (টেস্ট)
-      </button>
-      <p>{status}</p>
-      <hr />
-      <p>
-        <strong>Cron Job URL:</strong>{" "}
-        <code>{`${typeof window !== "undefined" ? window.location.origin : ""}/api/send-time`}</code>
-      </p>
-      <p>এই URL টি আপনার cron-job.org-এ সেট করে দিন।</p>
-    </main>
+    <>
+      <nav className="navbar">
+        <span className="navbar-brand">⏰ CronAdvice</span>
+        <span className="navbar-version">v1.0</span>
+      </nav>
+
+      <div className="main-container">
+        <div className="card">
+          <h2 className="card-title">সিস্টেম সক্রিয়</h2>
+          <p className="card-subtitle">
+            প্রতি ৩০ মিনিটে একটি করে উপদেশ/হাদিস আপনার Discord-এ পাঠানো হবে।
+          </p>
+          <div className="footer-info">
+            <p className="hint">
+              Cron-job.org তে এই URL দিন:{" "}
+              <span className="cron-url">{origin}/api/send-note</span>
+            </p>
+            <p className="hint" style={{ marginTop: "0.5rem" }}>
+              মোট ৩০টি উপদেশ/হাদিস সংরক্ষিত আছে।
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <footer className="global-footer">&copy; 2026 CronAdvice</footer>
+    </>
   );
 }

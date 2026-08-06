@@ -1,26 +1,202 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Reset & base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #000;
+  color: #fff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  background: rgba(0, 0, 0, 0.8);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(4px);
+}
+
+.navbar-brand {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #ef4444;
+  text-shadow:
+    0 0 10px rgba(239, 68, 68, 0.8),
+    0 0 20px rgba(239, 68, 68, 0.4);
+}
+
+.navbar-version {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.9rem;
+}
+
+.main-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.card {
+  width: 100%;
+  max-width: 700px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 1.5rem;
+  padding: 2rem 2rem 1.5rem;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.15);
+  backdrop-filter: blur(8px);
+}
+
+.editor-wrapper {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
+  margin-bottom: 1.5rem;
+}
+
+.editor-wrapper:focus-within {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+}
+
+.tip-tap-editor {
+  min-height: 200px;
+  color: #fff;
+  outline: none;
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.tip-tap-editor:focus {
+  outline: none;
+}
+
+.tip-tap-editor p {
+  margin: 0 0 0.75rem 0;
+}
+
+.tip-tap-editor .is-empty::before {
+  content: attr(data-placeholder);
+  color: rgba(255, 255, 255, 0.25);
+  float: left;
+  pointer-events: none;
+  height: 0;
+  font-style: italic;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 0.9rem;
+  background: #ef4444;
+  border: none;
+  border-radius: 1rem;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: #dc2626;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+}
+
+.btn-submit:disabled {
+  background: rgba(239, 68, 68, 0.4);
+  cursor: not-allowed;
+}
+
+.status {
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+}
+
+.status.success {
+  color: #4ade80;
+}
+
+.status.error {
+  color: #f87171;
+}
+
+.footer-info {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(239, 68, 68, 0.15);
+  text-align: center;
+}
+
+.cron-url {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #ef4444;
+  word-break: break-all;
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.global-footer {
+  padding: 1rem;
+  text-align: center;
+  border-top: 1px solid rgba(239, 68, 68, 0.1);
+  color: rgba(255, 255, 255, 0.15);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 640px) {
+  .navbar {
+    padding: 0.8rem 1rem;
+  }
+  .navbar-brand {
+    font-size: 1.4rem;
+  }
+  .card {
+    padding: 1.5rem;
+  }
+  .tip-tap-editor {
+    min-height: 150px;
+    font-size: 1rem;
+  }
+}
+
+.card-title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  text-align: center;
+  color: #ef4444;
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+  margin-bottom: 0.5rem;
+}
+
+.card-subtitle {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
 }
