@@ -7,8 +7,8 @@ export default function Home() {
   const [randomAdvice, setRandomAdvice] = useState("");
   const [newText, setNewText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
 
-  // ✅ Fetch random advice from the new endpoint (no Discord)
   const fetchRandom = async () => {
     try {
       const res = await fetch("/api/advice/random");
@@ -31,7 +31,9 @@ export default function Home() {
       });
       if (res.ok) {
         setNewText("");
-        fetchRandom(); // refresh the random advice
+        setJustAdded(true);
+        setTimeout(() => setJustAdded(false), 2000);
+        fetchRandom();
       } else {
         const error = await res.json();
         alert(error.error);
@@ -48,44 +50,104 @@ export default function Home() {
   }, []);
 
   return (
-    <>
+    <div className="app-container">
       <nav className="navbar">
-        <span className="navbar-brand">⏰ CronAdvice</span>
-        <span className="navbar-version">v1.0</span>
+        <div className="navbar-content">
+          <div className="navbar-brand-section">
+            <span className="clock-icon">⏰</span>
+            <span className="navbar-brand">CronAdvice</span>
+          </div>
+          <span className="navbar-version">v1.0</span>
+        </div>
       </nav>
 
-      <main style={{ padding: "2rem", maxWidth: "600px", margin: "0 auto" }}>
-        <h2>Random Advice</h2>
-        <blockquote style={{ fontSize: "1.5rem", margin: "1rem 0" }}>
-          {randomAdvice || "Loading..."}
-        </blockquote>
+      <main className="main-content">
+        {/* Hero Section */}
+        <section className="hero">
+          <div className="hero-pendulum">
+            <div className="pendulum"></div>
+          </div>
+          <h1 className="hero-title">Wisdom on Repeat</h1>
+          <p className="hero-subtitle">
+            A dose of perspective, delivered by the clock
+          </p>
+        </section>
 
-        <hr />
+        {/* Advice Display */}
+        <section className="advice-section">
+          <div className="section-label">Today's Thought</div>
+          <div className="advice-card">
+            <blockquote className="advice-text">
+              {randomAdvice || (
+                <span className="loading-text">Gathering wisdom...</span>
+              )}
+            </blockquote>
+            <button
+              className="refresh-btn"
+              onClick={fetchRandom}
+              title="Get another piece of advice"
+            >
+              ✨ Refresh
+            </button>
+          </div>
+        </section>
 
-        <h3>Add New Advice</h3>
-        <form onSubmit={handleSubmit}>
-          <textarea
-            rows="3"
-            value={newText}
-            onChange={(e) => setNewText(e.target.value)}
-            placeholder="Enter new advice..."
-            style={{ width: "100%", padding: "0.5rem", fontSize: "1rem" }}
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            style={{ marginTop: "0.5rem" }}
-          >
-            {loading ? "Adding..." : "Add"}
-          </button>
-        </form>
+        <div className="divider"></div>
 
-        <p style={{ marginTop: "1rem" }}>
-          <a href="/quotes">View all quotes →</a>
-        </p>
+        {/* Add Advice Section */}
+        <section className="form-section">
+          <div className="section-label">Share Your Wisdom</div>
+          <form onSubmit={handleSubmit} className="advice-form">
+            <div className="input-wrapper">
+              <textarea
+                className="advice-input"
+                rows="4"
+                value={newText}
+                onChange={(e) => setNewText(e.target.value)}
+                placeholder="What wisdom would you share?"
+              />
+              <div className="input-focus-border"></div>
+            </div>
+
+            <div className="form-footer">
+              <button
+                type="submit"
+                disabled={loading || !newText.trim()}
+                className="submit-btn"
+              >
+                {loading ? (
+                  <>
+                    <span className="spinner"></span>
+                    Adding...
+                  </>
+                ) : (
+                  <>
+                    <span>→</span> Add Advice
+                  </>
+                )}
+              </button>
+
+              {justAdded && (
+                <div className="success-toast">✓ Added to your collection</div>
+              )}
+            </div>
+          </form>
+        </section>
+
+        {/* Navigation */}
+        <section className="nav-section">
+          <a href="/quotes" className="nav-link">
+            <span className="nav-icon">📚</span>
+            <span>View All Quotes</span>
+            <span className="nav-arrow">→</span>
+          </a>
+        </section>
       </main>
 
-      <footer className="global-footer">&copy; 2026 Mursalin</footer>
-    </>
+      <footer className="global-footer">
+        <p>&copy; 2026 Mursalin</p>
+        <p className="footer-tagline">Moments of wisdom, marked by time</p>
+      </footer>
+    </div>
   );
 }
