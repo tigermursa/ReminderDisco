@@ -1,3 +1,4 @@
+// app/api/send-note/route.js
 import { NextResponse } from "next/server";
 import { getRandomAdvice } from "@/lib/advice";
 
@@ -11,7 +12,7 @@ export async function GET() {
       );
     }
 
-    const advice = getRandomAdvice();
+    const advice = await getRandomAdvice(); // now async
 
     const message = {
       content: `\n${advice}`,

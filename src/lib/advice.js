@@ -1,39 +1,53 @@
 // lib/advice.js
+import { connectToDatabase } from "@/lib/mongodb";
+import Advice from "@/models/Advice";
 
-const adviceList = [
-  "সবরের সাথে কাজ করো, আল্লাহ সফলতা দেবেন।",
-  "যে ব্যক্তি আল্লাহর ওপর ভরসা করে, আল্লাহ তার জন্য যথেষ্ট।",
-  "ক্ষমা করো, আল্লাহ তোমাকে ক্ষমা করবেন।",
-  "দান করো, বরকত বাড়বে।",
-  "নিজের ভুল স্বীকার করা বড় সাহসের কাজ।",
-  "অন্যের প্রতি দয়া করো, আল্লাহ তোমার প্রতি দয়া করবেন।",
-  "মিথ্যা বলা ছাড়ো, সত্যতা শান্তি আনে।",
-  "জ্ঞান অর্জন করো, তা আলোর পথ দেখায়।",
-  "পরিবারকে সময় দাও, এটাই আসল সম্পদ।",
-  "হাসি মুহূর্তে অন্যের মন জয় করো।",
-  "গীবত করা থেকে বিরত থাকো।",
-  "প্রতিটি কাজে নিয়ত শুদ্ধ করো।",
-  "ধৈর্য ধরো, বিজয় তোমারই হবে।",
-  "অহংকার ত্যাগ করো, বিনয় তোমাকে উন্নত করবে।",
-  "প্রতিদিন কুরআন তিলাওয়াত করো।",
-  "সালাত তোমার জীবনের ভারসাম্য রক্ষা করে।",
-  "অন্যের উপকার করো, তা ফিরে আসবে।",
-  "রাগের সময় থামো, শান্ত হও।",
-  "আল্লাহর রহমত থেকে কখনো নিরাশ হয়ো না।",
-  "ছোট ভালো কাজও বড় হতে পারে।",
-  "আল্লাহর স্মরণে অন্তর শান্ত হয়।",
-  "দ্বীনের পথে চলতে সহায়তা করো।",
-  "বাবা-মায়ের সেবা করো, জান্নাত তাদের পায়ের তলায়।",
-  "প্রতিবেশীর অধিকার রক্ষা করো।",
-  "ঈর্ষা পরিত্যাগ করো, তাতে শান্তি নষ্ট হয়।",
-  "আল্লাহর কাছে ক্ষমা প্রার্থনা করো, তিনি ক্ষমাশীল।",
-  "সুন্দর কথাবার্তা বলো, তা সাদাকা।",
-  "আমল করো, দুনিয়ার মোহ ত্যাগ করো।",
-  "অসৎ কাজ থেকে দূরে থাকো।",
-  "আল্লাহর পথে দান করো, বহুগুণে ফিরে পাবে।",
-];
+// Get a random advice from the database
+export async function getRandomAdvice() {
+  await connectToDatabase();
+  const count = await Advice.countDocuments();
+  if (count === 0) {
+    // Seed some default advice if collection is empty
+    await seedDefaultAdvice();
+    return getRandomAdvice(); // retry after seeding
+  }
+  const random = Math.floor(Math.random() * count);
+  const advice = await Advice.findOne().skip(random);
+  return advice.text;
+}
 
-export function getRandomAdvice() {
-  const randomIndex = Math.floor(Math.random() * adviceList.length);
-  return adviceList[randomIndex];
+// Seed default advice (optional, run once)
+async function seedDefaultAdvice() {
+  const defaultList = [
+    "সবরের সাথে কাজ করো, আল্লাহ সফলতা দেবেন।",
+    "যে ব্যক্তি আল্লাহর ওপর ভরসা করে, আল্লাহ তার জন্য যথেষ্ট।",
+    // ... add all your original advice here
+  ];
+  await Advice.insertMany(defaultList.map((text) => ({ text })));
+}
+
+// CRUD functions
+export async function getAllAdvice() {
+  await connectToDatabase();
+  return Advice.find().sort({ createdAt: -1 });
+}
+
+export async function createAdvice(text) {
+  await connectToDatabase();
+  const advice = new Advice({ text });
+  return advice.save();
+}
+
+export async function updateAdvice(id, text) {
+  await connectToDatabase();
+  return Advice.findByIdAndUpdate(
+    id,
+    { text },
+    { new: true, runValidators: true },
+  );
+}
+
+export async function deleteAdvice(id) {
+  await connectToDatabase();
+  return Advice.findByIdAndDelete(id);
 }
